@@ -2,35 +2,7 @@ import numpy as np
 from scipy.ndimage.filters import median_filter
 from scipy.interpolate import UnivariateSpline, CubicSpline
 
-def pre_processing(array, threshold=0.5, zeroing=0, plotting=False):
-    """
-    input :
-     - key, takes a int/float as a timestamp
-     - threshold : threshold of the gradient filter
-     - plotting : bool that decides wether or not to plot the process
-    output: 
-     - returns the array of points
-
-     #FIXME: It seems like the errors get worse with preprocessing enabled
-    """
-    z = array
-
-    corrector = [0]
-    for grad in np.gradient(z):
-        if np.abs(grad) > threshold:
-            corrector.append(grad+corrector[-1])
-            continue
-        corrector.append(corrector[-1])
-
-    corrector.pop(0)
-    corrected = median_filter(z-corrector,5)
-    
-    zero = zeroing - corrected[0]
-    corrected += zero
-    
-    return corrected
-
-def get_delta_z(array):
+def get_depth(array):
     x = np.linspace(0,1,array.shape[0])
     z = array  #data points
 
@@ -86,3 +58,17 @@ def get_delta_z(array):
         dz_mins=np.array([np.nan])
     
     return np.average(dz_mins)
+
+def get_std(array):
+    x = np.linspace(0,1,array.shape[0])
+    z = array  #data points
+
+    
+    spl = UnivariateSpline(x,z,s=5)
+    
+    z2 = spl(x)
+    z_smooth = UnivariateSpline(x, z2, s=1e5)
+    
+    delta_z = z2 - z_smooth(x)
+    
+    return np.std(delta_z)
