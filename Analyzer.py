@@ -5,20 +5,19 @@ from plotting import PlotManager
 import matplotlib.pyplot as plt
 
 class Analyzer(DataManager):
-    """A children class of the DataManager, containing the necessary functions for groove depth analysis.
-
-    
-    Arguments:
-        json_path {[str]} -- [Path to the json file to be loaded in the analyzer]
-        preprocessor {[func]} -- [A function that takes a numpy array as an input and returns a numpy array. It should preprocess the raw data (removing noise, smoke, etc.)]
-        processor {[func]} -- [A function that takes a numpy array as an input and returns a single float. This numerical output will be use for analyzing runs.]
-        plotter{[Class : PlotManager]} -- [A link to the PlotManager class to be used for  plotting runs]
-
-    Keyword Arguments:
-        count {int} -- [An ID to identify that dataset idk why I added that tbh] (default: {0})
-    """
-
     def __init__(self, json_path, preprocessor, processor, plotter, count=0):
+        """A children class of the DataManager, containing the necessary functions for groove depth analysis.
+
+        
+        Arguments:
+            json_path {[str]} -- [Path to the json file to be loaded in the analyzer]
+            preprocessor {[func]} -- [A function that takes a numpy array as an input and returns a numpy array. It should preprocess the raw data (removing noise, smoke, etc.)]
+            processor {[func]} -- [A function that takes a numpy array as an input and returns a single float. This numerical output will be use for analyzing runs.]
+            plotter{[Class : PlotManager]} -- [A link to the PlotManager class to be used for  plotting runs]
+
+        Keyword Arguments:
+            count {int} -- [An ID to identify that dataset idk why I added that tbh] (default: {0})
+        """
         DataManager.__init__(self, json_path)
         self.preprocessor = preprocessor
         self.processor = processor
@@ -72,7 +71,7 @@ class Analyzer(DataManager):
             depth_list.append(depth)
         
         if plotting:
-            self.plotter.plot_run(time[0], times[1], self.dt*aliasing)
+            self.plotter.plot_run(times, aliasing)
         
         return depth_list
 
@@ -82,12 +81,14 @@ if __name__ == "__main__":
     t0 = 0
     tf = 12000
     times = (t0, tf)
-    depth1 = analyzer.get_depth_list(times, preprocessed=True, aliasing=50)
+    # depth1 = analyzer.get_depth_list(times, preprocessed=True, aliasing=50)
     # print(depth1, depth2)
     # plt.scatter(np.arange(t0, tf, 50*0.2), depth1)
     # plt.plot(np.arange(t0, tf, 20), depth2)
     
-    z = analyzer.get_depth(100, plotting=True)
+    z = analyzer.plotter.plot_slice_raw(6000)
+    plt.show()
+    z = analyzer.plotter.plot_slice_preprocessed(6000)
     plt.show()
 
     # plt.plot(z)
