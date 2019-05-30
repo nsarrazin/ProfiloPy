@@ -77,7 +77,8 @@ def file_to_json(filepath, t0, cutoff_experiment=10, cutoff_datapoint=25, resamp
             print('Resampling the data...')
         for key in experiment.keys():
             data = experiment[key]
-            data = np.interp(np.linspace(0,1,1280), np.linspace(0,1,len(data)), data).tolist()
+            data = np.interp(np.linspace(0.5,1,resample), np.linspace(0,1,len(data)), data).tolist()
+            data.pop(0)
             experiment[key] = data
     
     if file_out == "":
@@ -93,10 +94,11 @@ class DataManager:
         Arguments:
             json_path {[str]} -- [Path to the json file to be loaded in the data manager]
         """
+        self.dt = 0.2
         with open(json_path, "rb") as json_file:
             self.data = json.load(json_file)
 
-    def get_step(self, time, experiment=0):
+    def get_array_time(self, time, experiment=0):
         """This functions parses through the raw data and returns the data whose timestamp is the closest to the specified time
         
         Arguments:
@@ -112,10 +114,10 @@ class DataManager:
 
         key = str(find_nearest(timestamps, time))
 
-        return self.data[experiment][key]
+        return np.array(self.data[experiment][key])
 
-    def get_index(self, index, experiment=0):
-        """[summary]
+    def get_array_index(self, index, experiment=0):
+        """This functions returns the raw data for a specific index.
         
         Arguments:
             index {[int]} -- [The index for which you want the data]
@@ -126,8 +128,8 @@ class DataManager:
         Returns:
             [list] -- [The full slice at the specified index]
         """
-        key = [self.data[experiment].keys()][n]
-        return self.data[experiment][key]
+        key = [self.data[experiment].keys()][index] #FIXME: Fix that line
+        return np.array(self.data[experiment][key])
 
 if __name__ == '__main__':
     print("Afternoon file")
