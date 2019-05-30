@@ -7,12 +7,18 @@ class PlotManager:
     def __init__(self, DataManager):
         self.mngr = DataManager
 
-    def plot_slice(self, time):
+    def plot_slice_raw(self, time):
         array = self.mngr.get_array_time(time)
-        plt.plot(array)
-        pass
+        return plt.plot(array)
+        
 
-    def plot_run(self):
+    def plot_slice_preprocessed(self, time):
+        array = self.mngr.get_array_time(time)
+        array = self.mngr.preprocessor(array)
+        return plt.plot(array)
+        
+
+    def plot_run(self, times, aliasing):
         pass
 
     def animate_run(self):
