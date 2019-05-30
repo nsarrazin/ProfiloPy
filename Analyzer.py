@@ -1,12 +1,12 @@
 from DataManager import DataManager
 import numpy as np
-from processing import get_delta_z
-from preprocessing import pre_processing
+from processing import get_depth, get_std
+from preprocessing import preprocessor_1
 from plotting import PlotManager
 import matplotlib.pyplot as plt
 
 class Analyzer(DataManager):
-    def __init__(self, json_path, preprocessor, processor, plotter, count=0):
+    def __init__(self, *, json_path, preprocessor, processor, plotter, count=0):
         """A children class of the DataManager, containing the necessary functions for groove depth analysis.
 
         
@@ -78,18 +78,15 @@ class Analyzer(DataManager):
 
 
 if __name__ == "__main__":
-    analyzer = Analyzer('afternoon.json', pre_processing, get_delta_z, PlotManager)
-    t0 = 0
-    tf = 12000
-    times = (t0, tf)
-    # depth1 = analyzer.get_depth_list(times, preprocessed=True, aliasing=50)
-    # print(depth1, depth2)
-    # plt.scatter(np.arange(t0, tf, 50*0.2), depth1)
-    # plt.plot(np.arange(t0, tf, 20), depth2)
+    analyzer = Analyzer(json_path='afternoon.json', preprocessor=preprocessor_1, processor=get_depth, plotter=PlotManager)
+
+    init_depth = analyzer.get_depth(0)
+    end_depth = analyzer.get_depth(10000)
+    print('Initial groove depth {}mm\nFinal groove depth {}mm'.format(round(init_depth,2), round(end_depth,2)))
     
-    z = analyzer.plotter.plot_slice_raw(6000)
+    z = analyzer.plotter.plot_slice_raw(6200)
     plt.show()
-    z = analyzer.plotter.plot_slice_preprocessed(6000)
+    z = analyzer.plotter.plot_slice_preprocessed(6200)
     plt.show()
 
     # plt.plot(z)
