@@ -1,6 +1,7 @@
 from DataManager import DataManager
 import numpy as np
-from processing import pre_processing, get_delta_z
+from processing import get_delta_z
+from preprocessing import pre_processing
 from plotting import PlotManager
 import matplotlib.pyplot as plt
 
@@ -77,7 +78,7 @@ class Analyzer(DataManager):
 
 
 if __name__ == "__main__":
-    analyzer = Analyzer('Wheel8 Aternoon.json', pre_processing, get_delta_z, PlotManager)
+    analyzer = Analyzer('afternoon.json', pre_processing, get_delta_z, PlotManager)
     t0 = 0
     tf = 12000
     times = (t0, tf)
