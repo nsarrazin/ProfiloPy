@@ -6,11 +6,15 @@ A function `file_to_json` can be found in `jsonify.py`, this function reads a ra
 
 For the afternoon file
 
-` $ python -c "from jsonify import file_to_json; file_to_json('Wheel8 Aternoon.txt', -3619682275.496, file_out='afternoon.json')"`
+```
+$ python -c "from jsonify import file_to_json; file_to_json('Wheel8 Aternoon.txt', -3619682275.496, file_out='afternoon.json')"
+```
 
 For the morning file 
 
-` $ python -c "from jsonify import file_to_json; file_to_json('Wheel8 morning.txt', -3619671997.651, file_out='morning.json')"`
+```
+$ python -c "from jsonify import file_to_json; file_to_json('Wheel8 morning.txt', -3619671997.651, file_out='morning.json')"
+```
 
 ## Analyzer
 Once you obtained a json file, you can call the `Analyzer` class to start processing that data. it requires a couple things :
@@ -48,3 +52,20 @@ As well as the two following graphs:
 Raw slice                  |  Preprocessed
 :-------------------------:|:-------------------------:
 ![](docs/Figure_1.png)     |  ![](docs/Figure_2.png)
+
+Because the preprocessor and processor attributes are functions, we can make use of lambdas to update some model parameters on the fly.
+
+```python
+t0, tf = 0, 10000
+for threshold in [0.1, 0.25, 0.5, 1, 2.5, 8]:
+    analyzer.preprocessor = lambda array : preprocessor_1(array, threshold=threshold) 
+
+    depths = analyzer.get_depth_list((t0,tf), aliasing=100)
+    plt.plot(depths, label="Threshold {}".format(threshold))
+
+plt.xlabel("Time")
+plt.ylabel("Groove depth [mm]")
+plt.ylim([-10, 0])
+plt.legend()
+plt.show()
+```
