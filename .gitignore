@@ -104,3 +104,4 @@ venv.bak/
 .mypy_cache/
 *.json
 *.txt
+temp-plot.html
