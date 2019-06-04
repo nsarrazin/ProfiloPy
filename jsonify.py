@@ -1,4 +1,5 @@
 import numpy as np
+from random import shuffle
 import json
 
 def file_to_json(filepath, t0, cutoff_experiment=10, cutoff_datapoint=25, resample=1000, maxdt=10, file_out = "", debug=False):
@@ -113,14 +114,35 @@ def downsampler_mean(json_path, n=5, experiment=0, file_out = ""):
         json_dict[key] = downsampled_array[n]
     
     if file_out == "":
-        file_out = json_path.replace('.json', "_downsampled.json")
+        file_out = json_path.replace('.json', "_mean_downsampled.json")
     
     with open(file_out, 'w') as outfile:
         json.dump([json_dict], outfile)
 
+def downsampler_random(json_path, n=500, experiment=0, file_out=""):
+    with open(json_path, "rb") as json_file:
+        data = json.load(json_file)[experiment]
+    
+    keys = list(data.keys())
+    keys = [float(key) for key in keys]
+    shuffle(keys)
+
+    timestamps = keys[:n]
+    timestamps.sort()
+    # print(timestamps)
+    json_dict = {}
+    for n, key in enumerate(timestamps):
+        json_dict[key] = data[str(key)]
+    
+    if file_out == "":
+        file_out = json_path.replace('.json', "_random_downsampled.json")
+    
+    with open(file_out, 'w') as outfile:
+        json.dump([json_dict], outfile)
 if __name__ == '__main__':
     # print("Afternoon file")
     # file_to_json("Wheel8 Aternoon.txt", -3619682275.496)
     # print("Morning file")
     # file_to_json("Wheel8 Morning.txt", -3619671997.651)
-    downsampler_mean("afternoon.json", n=50)
+    downsampler_random("afternoon.json", n=500)
+    # downsampler_mean("afternoon.json", n=50)
