@@ -37,7 +37,7 @@ def get_depth(array):
     
     roots = dz_spl.roots()   #roots of the difference 
     
-    mins = [i for _,i in sorted(zip(delta_z_spl(roots),roots))]   
+    mins = [i for _,i in sorted(zip(delta_z_spl(roots),roots))][:2]
     
     #roots = dz_spl.roots()
     
@@ -57,7 +57,7 @@ def get_depth(array):
     if dz_mins.size ==0:
         dz_mins=np.array([np.nan])
     
-    return np.average(dz_mins)
+    return -1*np.average(dz_mins)
 
 def get_std(array):
     x = np.linspace(0,1,array.shape[0])
