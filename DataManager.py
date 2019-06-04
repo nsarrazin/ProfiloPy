@@ -31,6 +31,7 @@ class DataManager:
         Returns:
             [list] -- [The full slice of the nearest recorded timestamp]
         """
+        time = float(time)
         timestamps = [float(i) for i  in self.data[experiment].keys()]
 
         key = str(find_nearest(timestamps, time))
