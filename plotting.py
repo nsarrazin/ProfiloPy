@@ -149,23 +149,33 @@ class PlotManager:
 
 
             list_traces = []
-            line_marker = dict(color='#0066FF', width=2)
+            # line_marker = dict(color='#0066FF', width=2)
 
-            for vals in value_superlist_x:
-                trace = go.Scatter3d(x=[val[0] for val in vals], 
-                                    y=[val[1] for val in vals], 
-                                    z=[val[2] for val in vals], 
+            for vals in list(value_superlist_x)+list(value_superlist_theta):
+                x = np.array([val[0] for val in vals])
+                y = np.array([val[1] for val in vals])
+                z = np.array([val[2] for val in vals])
+                trace = go.Scatter3d(x=x, 
+                                    y=y, 
+                                    z=z, 
                                     mode="lines",
-                                    line=line_marker)
+                                    # line=line_marker,
+                                    line=dict(
+                                        color=np.sqrt(y**2+z**2),
+                                        colorscale="Viridis",
+                                        cmin = np.min(r),
+                                        cmax = np.max(r),
+                                        width=10,
+                                    ))
                 list_traces.append(trace)
 
-            for vals in value_superlist_theta:
-                trace = go.Scatter3d(x=[val[0] for val in vals], 
-                                    y=[val[1] for val in vals], 
-                                    z=[val[2] for val in vals], 
-                                    mode="lines",
-                                    line=line_marker)
-                list_traces.append(trace)
+            # for vals in value_superlist_theta:
+            #     trace = go.Scatter3d(x=[val[0] for val in vals], 
+            #                         y=[val[1] for val in vals], 
+            #                         z=[val[2] for val in vals], 
+            #                         mode="lines",
+            #                         line=line_marker)
+            #     list_traces.append(trace)
             
             list_traces.append(trace)
             plotly.offline.plot({
