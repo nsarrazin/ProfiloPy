@@ -84,9 +84,9 @@ if __name__ == "__main__":
     analyzer = Analyzer(json_path='afternoon_random_downsampled.json', preprocessor=lambda array:preprocessor_1(array, threshold=np.inf), processor=get_depth, plotter=PlotManager)
     
     keys = list(analyzer.data[0].keys())
-    keys = np.clip([float(key) for key in keys], 0, 12000)[:25]
+    keys = np.clip([float(key) for key in keys], 0, 12000)[125:150]
 
-    analyzer.plotter.plot_3d(keys, type='cylindrical', radius=50, resample=100, alpha=7)
+    analyzer.plotter.plot_3d(keys, type='cylindrical', radius=20, resample=100)
     plt.show()
 
     # analyzer.processor = get_depth

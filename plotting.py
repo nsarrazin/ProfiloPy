@@ -101,7 +101,7 @@ class PlotManager:
     def animate_run(self):
         pass
 
-    def plot_3d(self, times, type="linear", radius=10, resample=50, alpha=-1):
+    def plot_3d(self, times, type="cylindrical", radius=20, resample=50):
         array = []
 
         for y, time in enumerate(times):
@@ -114,13 +114,14 @@ class PlotManager:
         y = np.array([i[1] for i in array])
         z = np.array([i[2] for i in array])
         
+        #TODO: Update linear to use plotly ,it's kinda garbage rn
         if type=="linear":    
             fig, ax = plt.subplots(subplot_kw=dict(projection='3d'))
             surf = ax.plot_trisurf(x,y,z,cmap=cm.terrain,
                         linewidth=0, antialiased=True, shade=False)
         
         if type=="cylindrical":
-            x_array = 2*radius*(x - np.min(x))/np.ptp(x).astype(int)
+            x_array = 3*radius*(x - np.min(x))/np.ptp(x).astype(int)
             theta = y*(2*np.pi)/(np.max(y)-np.min(y))
             
             r = z+radius
@@ -130,6 +131,8 @@ class PlotManager:
             dic_x = {}
             dic_theta = {}
 
+
+            # we start by going in circles over the virtual tire
             for x,y,z in zip(x_array,y_array,z_array): #we regroup the points by x-values
                 if x in dic_x.keys():
                     dic_x[x].append((x,y,z))
@@ -138,6 +141,7 @@ class PlotManager:
             
             value_superlist_x = dic_x.values()
 
+            #now we go by timestamp (or theta)
             n=0
             for theta, x,y,z in zip(theta, x_array,y_array,z_array): #we regroup the points by theta-values
                 if theta in dic_theta.keys():
@@ -151,8 +155,6 @@ class PlotManager:
 
 
             list_traces = []
-            # line_marker = dict(color='#0066FF', width=2)
-
             for vals in list(value_superlist_theta)+list(value_superlist_x):
                 x = np.array([val[0] for val in vals[1:]])
                 y = np.array([val[1] for val in vals[1:]])
@@ -164,7 +166,7 @@ class PlotManager:
                                     name=vals[0],
                                     line=dict(
                                         color=np.sqrt(y**2+z**2), #TODO: Improve the scale here
-                                        colorscale="Picnic",
+                                        colorscale="Jet",
                                         cmin = np.min(r),
                                         cmax = np.max(r),
                                         width=10,
