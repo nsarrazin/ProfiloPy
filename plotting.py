@@ -7,9 +7,13 @@ from matplotlib.colors import LightSource
 from mpl_toolkits.mplot3d import Axes3D  
 
 import numpy as np
+
 from scipy.ndimage.filters import median_filter
 from scipy.interpolate import UnivariateSpline, CubicSpline
+from scipy import signal
 
+import plotly
+import plotly.graph_objs as go
 class PlotManager:
     def __init__(self, DataManager):
         self.mngr = DataManager
@@ -89,7 +93,6 @@ class PlotManager:
         plt.xlim(0,1)
         plt.xlabel("Width [-]")
         plt.ylabel("Depth [mm]")
-        # plt.ylim((0, 35))
         plt.legend()
         
     def plot_run(self, times):
@@ -98,18 +101,78 @@ class PlotManager:
     def animate_run(self):
         pass
 
-    def plot_3d(self, times, type="linear"):
+    def plot_3d(self, times, type="linear", radius=10, resample=50, alpha=-1):
         array = []
 
         for y, time in enumerate(times):
-            for x,z in enumerate(self.mngr.preprocessor(self.mngr.get_array_time(time))):
+            raw = self.mngr.get_array_time(time)
+            processed = signal.resample(self.mngr.preprocessor(raw), resample)
+            for x,z in enumerate(processed[1:-2]):
                 array.append((x,y,z))
-        x,y = np.array([i[0] for i in array]), np.array([i[1] for i in array])
+        
+        x = np.array([i[0] for i in array])
+        y = np.array([i[1] for i in array])
         z = np.array([i[2] for i in array])
-
+        
         if type=="linear":    
             fig, ax = plt.subplots(subplot_kw=dict(projection='3d'))
             surf = ax.plot_trisurf(x,y,z,cmap=cm.terrain,
                         linewidth=0, antialiased=True, shade=False)
+        
         if type=="cylindrical":
-            pass
+            x_array = 2*radius*(x - np.min(x))/np.ptp(x).astype(int)
+            theta = y*(2*np.pi)/(np.max(y)-np.min(y))
+            
+            r = z+radius
+            y_array = r*np.cos(theta)
+            z_array= r*np.sin(theta)
+
+            dic_x = {}
+            dic_theta = {}
+
+            for x,y,z in zip(x_array,y_array,z_array): #we regroup the points by x-values
+                if x in dic_x.keys():
+                    dic_x[x].append((x,y,z))
+                    continue
+                dic_x[x] = [(x,y,z)] 
+            
+            value_superlist_x = dic_x.values()
+
+            for theta, x,y,z in zip(theta, x_array,y_array,z_array): #we regroup the points by theta-values
+                if theta in dic_theta.keys():
+                    dic_theta[theta].append((x,y,z))
+                    continue
+                dic_theta[theta] = [(x,y,z)]
+            
+            value_superlist_theta = dic_theta.values()
+
+
+
+            list_traces = []
+            line_marker = dict(color='#0066FF', width=2)
+
+            for vals in value_superlist_x:
+                trace = go.Scatter3d(x=[val[0] for val in vals], 
+                                    y=[val[1] for val in vals], 
+                                    z=[val[2] for val in vals], 
+                                    mode="lines",
+                                    line=line_marker)
+                list_traces.append(trace)
+
+            for vals in value_superlist_theta:
+                trace = go.Scatter3d(x=[val[0] for val in vals], 
+                                    y=[val[1] for val in vals], 
+                                    z=[val[2] for val in vals], 
+                                    mode="lines",
+                                    line=line_marker)
+                list_traces.append(trace)
+            
+            list_traces.append(trace)
+            plotly.offline.plot({
+                                "data": list_traces,
+                                "layout": go.Layout(title="3D Plot")
+                                }, auto_open=True)
+                                    
+
+
+            
