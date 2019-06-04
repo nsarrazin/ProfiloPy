@@ -80,8 +80,47 @@ def file_to_json(filepath, t0, cutoff_experiment=10, cutoff_datapoint=25, resamp
     with open(file_out, 'w') as outfile:
         json.dump(listExperiments, outfile)
 
+def downsampler_mean(json_path, n=5, experiment=0, file_out = ""):
+    """Takes the average of n timestamps and downsamples the data for faster processing.
+    
+    Arguments:
+        json_path {[str]} -- [Path to the input json, should have been processed through `file_to_json` before to ensure data consistency]
+    
+    Keyword Arguments:
+        n {int} -- [Downsampler window, defaults to 5 which means one sample per second (raw resolution of 5Hz)] (default: {5})
+    """
+    with open(json_path, "rb") as json_file:
+        data = json.load(json_file)[experiment]
+    
+    keys = list(data.keys())
+    n_points = len(data[keys[0]]) # we assume a constant amount of points per timestamp
+    downsampled_array = []
+
+    for point in range(n_points):
+        arr = np.array([data[timestamp][point] for timestamp in keys]) # we extract one of these points along the time dimension
+        end =  n * int(len(arr)/n)
+        downsampled_column = np.mean(arr[:end].reshape(-1, n), 1)
+        downsampled_array.append(downsampled_column)
+    
+    downsampled_array = np.array(downsampled_array).T.tolist()
+
+    keys = np.array([float(key) for key in keys])
+    end =  n * int(len(keys)/n)
+    downsampled_keys = np.mean(keys[:end].reshape(-1, n), 1)
+
+    json_dict = {}
+    for n, key in enumerate(downsampled_keys):
+        json_dict[key] = downsampled_array[n]
+    
+    if file_out == "":
+        file_out = json_path.replace('.json', "_downsampled.json")
+    
+    with open(file_out, 'w') as outfile:
+        json.dump([json_dict], outfile)
+
 if __name__ == '__main__':
-    print("Afternoon file")
-    file_to_json("Wheel8 Aternoon.txt", -3619682275.496)
-    print("Morning file")
-    file_to_json("Wheel8 Morning.txt", -3619671997.651)
+    # print("Afternoon file")
+    # file_to_json("Wheel8 Aternoon.txt", -3619682275.496)
+    # print("Morning file")
+    # file_to_json("Wheel8 Morning.txt", -3619671997.651)
+    downsampler_mean("afternoon.json", n=50)
