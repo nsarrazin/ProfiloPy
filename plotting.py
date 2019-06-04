@@ -121,7 +121,7 @@ class PlotManager:
                         linewidth=0, antialiased=True, shade=False)
         
         if type=="cylindrical":
-            x_array = 3*radius*(x - np.min(x))/np.ptp(x).astype(int)
+            x_array = 2.5*radius*(x - np.min(x))/np.ptp(x).astype(int)
             theta = y*(2*np.pi)/(np.max(y)-np.min(y))
             
             r = z+radius
@@ -180,11 +180,27 @@ class PlotManager:
             #                         mode="lines",
             #                         line=line_marker)
             #     list_traces.append(trace)
-            
+            min_ax = min([np.min(x_array), np.min(y_array), np.min(z_array)])
+            max_ax = max([np.max(x_array), np.max(y_array), np.max(z_array)])
+
+            layout = go.Layout(
+                title="3D Plot",
+                # scene=dict(
+                # xaxis=dict(
+                #     range=[min_ax, max_ax]
+                # ),
+                # yaxis=dict(
+                #     range=[min_ax, max_ax]
+                # ),
+                # zaxis=dict(
+                #     range=[min_ax, max_ax]
+                # ))
+            )
+
             list_traces.append(trace)
             plotly.offline.plot({
                                 "data": list_traces,
-                                "layout": go.Layout(title="3D Plot")
+                                "layout": layout,
                                 }, auto_open=True)
                                     
 
