@@ -2,6 +2,10 @@ import matplotlib.pyplot as plt
 import matplotlib as mpl
 from matplotlib.dates import date2num
 
+from matplotlib import cm
+from matplotlib.colors import LightSource
+from mpl_toolkits.mplot3d import Axes3D  
+
 import numpy as np
 from scipy.ndimage.filters import median_filter
 from scipy.interpolate import UnivariateSpline, CubicSpline
@@ -88,8 +92,30 @@ class PlotManager:
         # plt.ylim((0, 35))
         plt.legend()
         
-    def plot_run(self, times, aliasing):
+    def plot_run(self, times):
         pass
 
     def animate_run(self):
         pass
+
+    def plot_3d(self, times, type="linear"):
+        array = []
+
+        for y, time in enumerate(times):
+            for x,z in enumerate(self.mngr.preprocessor(self.mngr.get_array_time(time))):
+                array.append((x,y,z))
+        x_max = len(self.mngr.get_array_time(time))
+        y_max = len(times)
+
+        x,y = np.array([i[0] for i in array]), np.array([i[1] for i in array])
+        z = np.array([i[2] for i in array])
+        # z = np.reshape(z, (x_max, y_max)).T
+
+        fig, ax = plt.subplots(subplot_kw=dict(projection='3d'))
+        ls = LightSource(270, 45)
+        # rgb = ls.shade(z, cmap=plt.cm.terrain, vert_exag=1, blend_mode='overlay')
+        rgb = []
+        for z_scalar in z:
+            rgb.append(cm.terrain(z_scalar))
+        surf = ax.plot_trisurf(x,y,z, cmap=cm.terrain,
+                       linewidth=0, antialiased=True, shade=False)

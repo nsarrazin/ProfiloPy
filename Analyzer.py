@@ -79,19 +79,17 @@ class Analyzer(DataManager):
 
 
 if __name__ == "__main__":
-    analyzer = Analyzer(json_path='afternoon.json', preprocessor=preprocessor_1, processor=get_depth, plotter=PlotManager)
+    analyzer = Analyzer(json_path='afternoon_random_downsampled.json', preprocessor=lambda array:preprocessor_1(array, threshold=np.inf), processor=get_depth, plotter=PlotManager)
     
-    t0, tf = 0, 10000   
-    # plt.figure(dpi=300)
-    depths = analyzer.get_depth_list(np.arange(t0, tf, 10))
-    # for threshold in [0.1, 0.25, 0.5, 1, 2.5, 8]:
-    #     print("Threshold {}".format(threshold))
-    #     analyzer.preprocessor = lambda array : preprocessor_1(array, threshold=threshold) 
-    #     depths = analyzer.get_depth_list((t0,tf), aliasing=100)
-    plt.scatter(range(len(depths), depths))
-    
-    plt.xlabel("Time")
-    plt.ylabel("Groove depth [mm]")
-    plt.ylim([-10, 0])
-    # plt.legend()
+    keys = list(analyzer.data[0].keys())
+    keys = [float(key) for key in keys][:10]
+
+    analyzer.plotter.plot_3d(keys)
     plt.show()
+    # plt.figure(dpi=300)
+    # depths = analyzer.get_depth_list(keys)
+    # plt.plot(keys, depths)
+    # plt.xlabel("Time")
+    # plt.ylabel("Groove depth [mm]")
+    # plt.ylim([-10, 0])
+    # plt.show()
