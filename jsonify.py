@@ -1,7 +1,7 @@
 import numpy as np
 from random import shuffle
 import json
-
+from DataManager import find_nearest
 def file_to_json(filepath, t0, cutoff_experiment=10, cutoff_datapoint=25, resample=1000, maxdt=10, file_out = "", debug=False):
     """This function converts a raw .txt obtained from the profilometer into an organized JSON that can be parsed easily. 
         It splits the data into "experiments" if the difference between two timestamps is too large.
@@ -139,10 +139,31 @@ def downsampler_random(json_path, n=500, experiment=0, file_out=""):
     
     with open(file_out, 'w') as outfile:
         json.dump([json_dict], outfile)
+
+
+def downsampler_select(json_path, times, experiment=0, file_out=""):
+    with open(json_path, "rb") as json_file:
+        data = json.load(json_file)[experiment]
+    
+    timestamps = [float(i) for i  in data.keys()]
+
+
+    json_dict = {}
+
+    for time in times:
+        key = str(find_nearest(timestamps, time))
+        json_dict[key] = data[key]
+        
+    if file_out == "":
+        file_out = json_path.replace('.json', "_select.json")
+    
+    with open(file_out, 'w') as outfile:
+        json.dump([json_dict], outfile)
 if __name__ == '__main__':
     # print("Afternoon file")
     # file_to_json("Wheel8 Aternoon.txt", -3619682275.496)
     # print("Morning file")
     # file_to_json("Wheel8 Morning.txt", -3619671997.651)
-    downsampler_random("afternoon.json", n=500)
+    # downsampler_random("afternoon.json", n=500)
     # downsampler_mean("afternoon.json", n=50)
+    downsampler_select("morning.json", [0])
