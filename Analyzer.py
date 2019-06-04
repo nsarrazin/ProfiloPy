@@ -79,17 +79,46 @@ class Analyzer(DataManager):
 
 
 if __name__ == "__main__":
+    analyzer_morning = Analyzer(json_path="morning_select.json")
+
     analyzer = Analyzer(json_path='afternoon_random_downsampled.json', preprocessor=lambda array:preprocessor_1(array, threshold=np.inf), processor=get_depth, plotter=PlotManager)
     
     keys = list(analyzer.data[0].keys())
-    keys = [float(key) for key in keys][:10]
+    keys = np.clip([float(key) for key in keys], 0, 12000)[:25]
 
-    analyzer.plotter.plot_3d(keys)
+    analyzer.plotter.plot_3d(keys, type='cylindrical', radius=50, resample=100, alpha=7)
     plt.show()
-    # plt.figure(dpi=300)
-    # depths = analyzer.get_depth_list(keys)
-    # plt.plot(keys, depths)
+
+    # analyzer.processor = get_depth
+    # values_depth = analyzer.get_depth_list(keys)
+    # analyzer.processor = get_std
+    # values_sd = analyzer.get_depth_list(keys)
+
+    # plt.plot(keys, values_depth, label="Groove depth [mm]")
+    # plt.plot(keys, values_sd, label="Standard Deviation [mm]")
+    # plt.legend()
     # plt.xlabel("Time")
-    # plt.ylabel("Groove depth [mm]")
+    # # plt.ylabel("Groove depth [mm]")
     # plt.ylim([-10, 0])
     # plt.show()
+
+
+    # fig, ax1 = plt.subplots()
+
+    # color = 'tab:orange'
+    # ax1.set_xlabel('Time (s)', size=18)
+    # ax1.set_ylabel('Groove depth (mm)', color=color, size=18)
+    # ax1.plot(keys, values_depth, color=color,linewidth=1.5, label="Groove depth measurement")
+    # ax1.tick_params(axis='y', labelcolor=color, labelsize=16)
+    # ax1.tick_params(axis='x', labelsize=16)
+    # ax1.set_ylim(0, 9)
+    # ax2 = ax1.twinxz()  # instantiate a second axes that shares the same x-axis
+
+    # color = 'tab:blue'
+    # ax2.set_ylabel('Standard Deviation (mm)', color=color, size=18)  # we already handled the x-label with ax1
+    # ax2.plot(keys, values_sd, color=color,linewidth=1.5, label="Standard Deviation measurement")
+    # ax2.tick_params(axis='y', labelcolor=color, labelsize=16)
+    # ax2.grid(False) #otherwise we get one grid for each axis
+    # ax2.set_ylim(0, 4)
+
+    # plt.savefig("full_run.png")
