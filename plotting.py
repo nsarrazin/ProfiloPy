@@ -134,15 +134,17 @@ class PlotManager:
                 if x in dic_x.keys():
                     dic_x[x].append((x,y,z))
                     continue
-                dic_x[x] = [(x,y,z)] 
+                dic_x[x] = ["x={}".format(round(x,2)), (x,y,z)] 
             
             value_superlist_x = dic_x.values()
 
+            n=0
             for theta, x,y,z in zip(theta, x_array,y_array,z_array): #we regroup the points by theta-values
                 if theta in dic_theta.keys():
                     dic_theta[theta].append((x,y,z))
                     continue
-                dic_theta[theta] = [(x,y,z)]
+                dic_theta[theta] = ["t={}".format(round(times[n],2)), (x,y,z)]
+                n+=1
             
             value_superlist_theta = dic_theta.values()
 
@@ -151,18 +153,18 @@ class PlotManager:
             list_traces = []
             # line_marker = dict(color='#0066FF', width=2)
 
-            for vals in list(value_superlist_x)+list(value_superlist_theta):
-                x = np.array([val[0] for val in vals])
-                y = np.array([val[1] for val in vals])
-                z = np.array([val[2] for val in vals])
+            for vals in list(value_superlist_theta)+list(value_superlist_x):
+                x = np.array([val[0] for val in vals[1:]])
+                y = np.array([val[1] for val in vals[1:]])
+                z = np.array([val[2] for val in vals[1:]])
                 trace = go.Scatter3d(x=x, 
                                     y=y, 
                                     z=z, 
                                     mode="lines",
-                                    # line=line_marker,
+                                    name=vals[0],
                                     line=dict(
-                                        color=np.sqrt(y**2+z**2),
-                                        colorscale="Viridis",
+                                        color=np.sqrt(y**2+z**2), #TODO: Improve the scale here
+                                        colorscale="Picnic",
                                         cmin = np.min(r),
                                         cmax = np.max(r),
                                         width=10,
