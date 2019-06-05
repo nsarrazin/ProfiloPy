@@ -1,10 +1,12 @@
 from DataManager import DataManager
 from functions.processing import get_depth, get_std
-from functions.preprocessing import preprocessor_1
+from functions.preprocessing import preprocessor_1, zeroing
 from plotting import PlotManager
 
 import numpy as np
 import matplotlib.pyplot as plt
+from scipy.ndimage.filters import median_filter
+
 
 class Analyzer(DataManager):
     def __init__(self, *, json_path, preprocessor=lambda array:array, processor=lambda array:1, plotter=PlotManager, count=0):
@@ -84,9 +86,11 @@ if __name__ == "__main__":
     analyzer = Analyzer(json_path='afternoon_random_downsampled.json', preprocessor=lambda array:preprocessor_1(array, threshold=np.inf), processor=get_depth, plotter=PlotManager)
     
     keys = list(analyzer.data[0].keys())
-    keys = np.clip([float(key) for key in keys], 0, 12000)[125:150]
+    # keys = np.clip([float(key) for key in keys], 0, 12000)
 
-    analyzer.plotter.plot_3d(keys, type='cylindrical', radius=20, resample=100)
+    keys = np.clip([float(key) for key in keys], 0, 12000)[125:150]
+    analyzer.preprocessor = zeroing
+    analyzer.plotter.plot_3d(keys, type='cylindrical', radius=25, resample=100)
     plt.show()
 
     # analyzer.processor = get_depth
@@ -94,16 +98,11 @@ if __name__ == "__main__":
     # analyzer.processor = get_std
     # values_sd = analyzer.get_depth_list(keys)
 
-    # plt.plot(keys, values_depth, label="Groove depth [mm]")
-    # plt.plot(keys, values_sd, label="Standard Deviation [mm]")
-    # plt.legend()
-    # plt.xlabel("Time")
-    # # plt.ylabel("Groove depth [mm]")
-    # plt.ylim([-10, 0])
-    # plt.show()
 
+    # values_depth = median_filter(values_depth, size=5)
+    # values_sd = median_filter(values_sd, size=5)
 
-    # fig, ax1 = plt.subplots()
+    # fig, ax1 = plt.subplots(dpi=300, figsize=(12,6))
 
     # color = 'tab:orange'
     # ax1.set_xlabel('Time (s)', size=18)
@@ -112,7 +111,7 @@ if __name__ == "__main__":
     # ax1.tick_params(axis='y', labelcolor=color, labelsize=16)
     # ax1.tick_params(axis='x', labelsize=16)
     # ax1.set_ylim(0, 9)
-    # ax2 = ax1.twinxz()  # instantiate a second axes that shares the same x-axis
+    # ax2 = ax1.twinx()  # instantiate a second axes that shares the same x-axis
 
     # color = 'tab:blue'
     # ax2.set_ylabel('Standard Deviation (mm)', color=color, size=18)  # we already handled the x-label with ax1
