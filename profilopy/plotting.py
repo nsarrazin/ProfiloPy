@@ -14,6 +14,7 @@ from scipy import signal
 
 import plotly
 import plotly.graph_objs as go
+
 class PlotManager:
     def __init__(self, DataManager):
         """Called from inside the `Analyzer` class. You probably shouldn't call it yourself.
@@ -227,7 +228,6 @@ class PlotManager:
                                 "data": list_traces,
                                 "layout": layout,
                                 }, auto_open=True)
-                                    
 
 
             

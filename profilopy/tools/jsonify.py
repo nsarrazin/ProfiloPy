@@ -1,7 +1,8 @@
 import numpy as np
 from random import shuffle
 import json
-from DataManager import find_nearest
+from ..DataManager import find_nearest
+
 def file_to_json(filepath, t0, cutoff_experiment=10, cutoff_datapoint=25, resample=1000, maxdt=10, file_out = "", debug=False):
     """This function converts a raw .txt obtained from the profilometer into an organized JSON that can be parsed easily. 
         It splits the data into "experiments" if the difference between two timestamps is too large.

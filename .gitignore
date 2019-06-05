@@ -102,6 +102,7 @@ venv.bak/
 
 # mypy
 .mypy_cache/
-*.json
-*.txt
-temp-plot.html
+
+scripts/data/*
+scripts/results/*
+scripts/temp-plot.html

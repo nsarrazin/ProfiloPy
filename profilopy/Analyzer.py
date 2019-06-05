@@ -1,11 +1,10 @@
-from DataManager import DataManager
-from functions.processing import get_depth, get_std
-from functions.preprocessing import preprocessor_1, zeroing
-from plotting import PlotManager
+from .DataManager import DataManager
+from .functions.processing import get_depth, get_std
+from .functions.preprocessing import preprocessor_1, zeroing
+from .plotting import PlotManager
 
 import numpy as np
 import matplotlib.pyplot as plt
-from scipy.ndimage.filters import median_filter
 
 
 class Analyzer(DataManager):
@@ -29,6 +28,11 @@ class Analyzer(DataManager):
         self.id = count
 
     def preprocess_slice(self, time):
+        """[summary]
+        
+        Arguments:
+            time {[type]} -- [description]
+        """
         array = self.get_array_time(time)
 
         array_processed = self.preprocessor(array)
