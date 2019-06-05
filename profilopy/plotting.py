@@ -154,10 +154,10 @@ class PlotManager:
                         linewidth=0, antialiased=True, shade=False)
         
         if type=="cylindrical":
-            x_array = 2.5*radius*(x - np.min(x))/np.ptp(x).astype(int)
-            theta = y*(2*np.pi)/(np.max(y)-np.min(y))
+            x_array = 2.5*radius*(x - np.min(x))/np.ptp(x).astype(int) #we scale x_array to create an aspect ratio more pleasing for viz
+            theta = y*(2*np.pi)/(np.max(y)-np.min(y)) # the linear y dimension is scaled between 0 and 2pi to become theta
             
-            r = z+radius
+            r = z+radius # the radius equals the z measurement of profilometer + virtual radius
             y_array = r*np.cos(theta)
             z_array= r*np.sin(theta)
 
@@ -165,28 +165,29 @@ class PlotManager:
             dic_theta = {}
 
 
-            # we start by going in circles over the virtual tire
+            # we start by drawing lines through the same points over time (gives "circles")
             for x,y,z in zip(x_array,y_array,z_array): #we regroup the points by x-values
                 if x in dic_x.keys():
                     dic_x[x].append((x,y,z))
                     continue
-                dic_x[x] = ["x={}".format(round(x,2)), (x,y,z)] 
+                dic_x[x] = ["x={}".format(round(x,2)), (x,y,z)] # the first value in the list of points is the label of the trace
             
             value_superlist_x = dic_x.values()
 
-            #now we go by timestamp (or theta)
+            # then all the point at the same timestamp (gives typical "slices")
             n=0
             for theta, x,y,z in zip(theta, x_array,y_array,z_array): #we regroup the points by theta-values
                 if theta in dic_theta.keys():
                     dic_theta[theta].append((x,y,z))
                     continue
-                dic_theta[theta] = ["t={}".format(round(times[n],2)), (x,y,z)]
+                dic_theta[theta] = ["t={}".format(round(times[n],2)), (x,y,z)] # the first value in the list of points is the label of the trace
                 n+=1
             
             value_superlist_theta = dic_theta.values()
 
 
-
+            # by using a combination of lines going both longitudinally and radially we get
+            # a nice "wireframe" effect that clearly helps to visualize what's going on
             list_traces = []
             for vals in list(value_superlist_theta)+list(value_superlist_x):
                 x = np.array([val[0] for val in vals[1:]])
