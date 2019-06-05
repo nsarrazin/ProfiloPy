@@ -29,3 +29,9 @@ def preprocessor_1(array, threshold=2, zeroing=0, plotting=False):
     corrected += zero
     
     return corrected
+
+
+def zeroing(array, zeroing=0):
+    zero_factor = zeroing - array[0]
+    array += zero_factor
+    return array
