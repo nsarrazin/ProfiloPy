@@ -1,6 +1,13 @@
 # profilometer-analysis
 Code repo for AE2223-I, contains all the processing code to analyze raw profilometer data and reproduce the graphs found in the paper.
 
+# WARNING : Outdated doc !
+It will need to be rewritten in the near future. Right now just install the package by running `pip install -e .` in the root folder.
+Then take a look at the scripts folder for some demonstrations of what this package can do. Make sure the raw files are in `scripts/data` and start by running `create_json.py`. Now with [3D Graphs !](http://nsarrazin.com/tire_demo)
+
+Everything after this line is to be considered outdated.
+
+
 ## Raw data processing
 A function `file_to_json` can be found in `jsonify.py`, this function reads a raw txt file outputted by the datalogger, and converts it to json to make it easier to work with. It can be called as follow:
 
