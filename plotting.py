@@ -16,18 +16,41 @@ import plotly
 import plotly.graph_objs as go
 class PlotManager:
     def __init__(self, DataManager):
+        """Called from inside the `Analyzer` class. You probably shouldn't call it yourself.
+        
+        Arguments:
+            DataManager {[object child of DataManager]} -- a reference to a DataManager that can be used to extract the data needed for plotting
+        """
         self.mngr = DataManager
 
     def plot_slice_raw(self, time):
+        """Just plots the basic raw data, without preprocessing. Does not show the plot, gotta call plt.show() outside of the function
+        
+        Arguments:
+            time {[float]} -- timestamp to plot            
+        """
         array = self.mngr.get_array_time(time)
         return plt.plot(array)
         
     def plot_slice_preprocessed(self, time):
+        """Plots the preprocessed data. Does not show the plot, gotta call plt.show() outside of the function
+        
+        Arguments:
+            time {[float]} -- timestamp to plot            
+        """
+
         array = self.mngr.get_array_time(time)
         array = self.mngr.preprocessor(array)
         return plt.plot(array)
 
     def plot_slice_processed(self, time):
+        """Plots the processed data. Does not show the plot, gotta call plt.show() outside of the function, but it does everything else.
+        #NOTE: ITS HARDCODED TO DISPLAY GET_DEPTH, if the processor function is changed to something else, this won't update
+        Careful with this, it should probably be reworked.
+
+        Arguments:
+            time {[float]} -- timestamp to plot            
+        """
         z = self.mngr.get_array_time(time)
         z = self.mngr.preprocessor(z)
 
@@ -102,8 +125,17 @@ class PlotManager:
         pass
 
     def plot_3d(self, times, type="cylindrical", radius=20, resample=50):
+        """Plots a 3D representation of the tire over time.
+        
+        Arguments:
+            times {[list]} -- [List of timestamps to use in the plotting, preferably sorted]
+        
+        Keyword Arguments:
+            type {str} -- [Whether the plot should be linear or wrapped in a cylindrical shape] (default: {"cylindrical"})
+            radius {int} -- [Radius of the virtual wheel (mm)] (default: {20})
+            resample {int} -- [Number of points to use for resampling each timestamp. The raw timestamp has 1k points, too much for plotting] (default: {50})
+        """
         array = []
-
         for y, time in enumerate(times):
             raw = self.mngr.get_array_time(time)
             processed = signal.resample(self.mngr.preprocessor(raw), resample)
@@ -173,13 +205,6 @@ class PlotManager:
                                     ))
                 list_traces.append(trace)
 
-            # for vals in value_superlist_theta:
-            #     trace = go.Scatter3d(x=[val[0] for val in vals], 
-            #                         y=[val[1] for val in vals], 
-            #                         z=[val[2] for val in vals], 
-            #                         mode="lines",
-            #                         line=line_marker)
-            #     list_traces.append(trace)
             min_ax = min([np.min(x_array), np.min(y_array), np.min(z_array)])
             max_ax = max([np.max(x_array), np.max(y_array), np.max(z_array)])
 
