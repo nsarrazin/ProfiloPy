@@ -106,3 +106,4 @@ venv.bak/
 scripts/data/*
 scripts/results/*
 scripts/temp-plot.html
+.vscode/settings.json
