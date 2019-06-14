@@ -31,7 +31,7 @@ class PlotManager:
             time {[float]} -- timestamp to plot            
         """
         array = self.mngr.get_array_time(time)
-        return plt.plot(array)
+        return plt.plot(np.linspace(0, 1, array.shape[0]), array, label="Initial slice", linestyle="dashed", linewidth=1.25)
         
     def plot_slice_preprocessed(self, time):
         """Plots the preprocessed data. Does not show the plot, gotta call plt.show() outside of the function
@@ -46,7 +46,7 @@ class PlotManager:
 
     def plot_slice_processed(self, time):
         """Plots the processed data. Does not show the plot, gotta call plt.show() outside of the function, but it does everything else.
-        #NOTE: ITS HARDCODED TO DISPLAY GET_DEPTH, if the processor function is changed to something else, this won't update
+        #XXX: ITS HARDCODED TO DISPLAY GET_DEPTH, if the processor function is changed to something else, this won't update
         Careful with this, it should probably be reworked.
 
         Arguments:
@@ -91,7 +91,7 @@ class PlotManager:
         
         mins = [i for _,i in sorted(zip(delta_z_spl(roots),roots))][:2]   
         
-        eps_down=10 #lower bound for second dderivative
+        eps_down=5 #lower bound for second dderivative
         n=len(mins)
         #print("Second derivative value at its roots",d2z_spl(roots))
         grooves=[]
@@ -108,15 +108,19 @@ class PlotManager:
         if dz_mins.size ==0:
             dz_mins=np.array([0])
         
-        plt.clf()
         plt.plot(x, z_smooth(x), linewidth=1.5, label="Smoothed spline")
         plt.scatter(x, z,s=0.75,c="C4", label="Raw data")
         plt.plot(x, z_spl, linewidth=1.5, label="Fitting spline")
-        for i in mins:
-            plt.axvline(i, c="C2", linestyle="dashed", linewidth=1.5,label="Detected groove")
+
+        for n,i in enumerate(mins):
+            if n==0: 
+                plt.axvline(i, c="C3", linestyle="dashed", linewidth=1.5,label="Detected groove")
+                continue
+            plt.axvline(i, c="C3", linestyle="dashed", linewidth=1.5)
+
         plt.xlim(0,1)
-        plt.xlabel("Width [-]")
-        plt.ylabel("Depth [mm]")
+        plt.xlabel("Width [-]", size=16)
+        plt.ylabel("Depth [mm]", size=16)
         plt.legend()
         
     def plot_run(self, times):
