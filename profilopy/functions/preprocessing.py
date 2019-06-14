@@ -2,7 +2,7 @@ import numpy as np
 from scipy.ndimage.filters import median_filter
 from scipy.interpolate import UnivariateSpline, CubicSpline
 
-def preprocessor_1(array, threshold=2, zeroing=0, plotting=False):
+def preprocessor_1(array, threshold=0.5, zeroing=0, plotting=False):
     """
     input :
      - key, takes a int/float as a timestamp
