@@ -41,7 +41,7 @@ def get_depth(array):
     
     #roots = dz_spl.roots()
     
-    eps_down=10 #lower bound for second dderivative
+    eps_down=5 #lower bound for second dderivative
     n=len(mins)
     #print("Second derivative value at its roots",d2z_spl(roots))
     grooves=[]
@@ -49,13 +49,14 @@ def get_depth(array):
     for i in range(n):
         if  d2z_spl(mins[i]) > eps_down and  (z_smooth(mins[i]) -spl(mins[i]))  >= 1:
             grooves.append(mins[i])    #or roots, I dont know
+    
     grooves=np.array(grooves)
     #print("All roots",roots)
     
     
     dz_mins = delta_z_spl(grooves)
     if dz_mins.size ==0:
-        dz_mins=np.array([np.nan])
+        return np.nan
     
     return -1*np.average(dz_mins)
 
