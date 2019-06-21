@@ -50,6 +50,7 @@ ax2.plot(keys, values_sd, color=color,linewidth=1.5, linestyle="dashed", label="
 ax2.tick_params(axis='y', labelcolor=color, labelsize=16)
 ax2.grid(False) #otherwise we get one grid for each axis
 ax2.set_ylim(0, 4)
+ax2.plot(0,0,color="tab:blue", linewidth=1.5, label="Groove depth measurement")
 
 for n, run in enumerate([run6,run13]):
     y = [0, 10]
